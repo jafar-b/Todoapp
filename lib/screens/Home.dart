@@ -3,45 +3,104 @@ import 'package:flutter/services.dart';
 import 'package:todoapp/constants/colors.dart';
 import 'package:todoapp/screens/Todoitems.dart';
 import 'package:todoapp/model/todo.dart';
-
-class Home extends StatelessWidget {
-
+          
+class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
+
   @override
-  Widget build(BuildContext context) {
+  State<Home> createState() => _HomeState();
+}
 
-   final  list=todo.list();
-           return Scaffold(
-      backgroundColor: Colors.grey[300],
-      appBar: appBar(),
-      body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-        child: Column(
-          children: [
-            searchBox(),
-            Expanded(
-                child: ListView(
-              children: <Widget>[
-                Container(
-                  margin: const EdgeInsets.only(top: 50, bottom: 20),
-                  child: (Text(
-                    "All Todos",
-                    style:
-                        TextStyle(fontSize: 25.0, fontWeight: FontWeight.w500),
-                  )),
-                ),
-
-                       
-                Todoitems(),
-
-              ],
-            ))
-          ],
-        ),
-      ),
+class _HomeState extends State<Home> {
+  void _handleOnChange(todo Todo){
+    setState((){
+      Todo.isDone=!Todo.isDone;
+    }
     );
   }
+
+  @override
+  Widget build(BuildContext context) {
+    final list = todo.list();
+    return Scaffold(
+        backgroundColor: Colors.grey[300],
+        appBar: appBar(),
+        body: Stack(
+            // padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+            children: [
+              Container(
+                child: Column(
+                  children: [
+                    searchBox(),
+                    Expanded(
+                        child: ListView(
+                      children: <Widget>[
+                        Container(
+                          margin: const EdgeInsets.only(top: 50, bottom: 20),
+                          child: (Text(
+                            "All Todos",
+                            style: TextStyle(
+                                fontSize: 25.0, fontWeight: FontWeight.w500),
+                          )),
+                        ),
+                        for (todo Todoo in list)
+                          Todoitems(
+                            Todo: Todoo,
+                            onDelete: (){},
+                            onTodoChanged:_handleOnChange ,
+                          ),
+                      ],
+                    ))
+                  ],
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Row(
+                  children: [
+                    Expanded(
+                        child: Container(
+                      margin: EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                      decoration:  BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey,
+                            offset: Offset(0.0, 0.0),
+                            blurRadius: 10.0,
+                            spreadRadius: 0.0,
+                          )         ,
+                        ],
+                        borderRadius: BorderRadius.circular(10),
+                            
+                      ),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: 'Add a new Todo',
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    )
+                    ) ,
+                    Container(
+                      margin: EdgeInsets.only(bottom: 20,right: 20),
+                      child: ElevatedButton(
+                        child: Text("+",style: TextStyle(fontSize: 40),),
+                        style: ElevatedButton.styleFrom(backgroundColor: tdBlue,minimumSize: Size(60,60),elevation: 10),
+                        onPressed: (){},
+                      ),
+                    )
+                  ],
+                ),
+              )
+            ]));
+  }
 }
+
+
+
 
 Widget searchBox() {
   return Container(
@@ -51,12 +110,7 @@ Widget searchBox() {
           child: Column(children: [
         Container(
           decoration: BoxDecoration(
-              // boxShadow:const [
-              //     BoxShadow(blurRadius: 2.0,spreadRadius: 0.5),
-              //
-              // ],
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20)),
+              color: Colors.white, borderRadius: BorderRadius.circular(20)),
           margin: EdgeInsets.symmetric(vertical: 10.0),
           child: const TextField(
             decoration: InputDecoration(
